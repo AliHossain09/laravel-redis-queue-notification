@@ -18,10 +18,12 @@ class PostController extends Controller
         });
 
         $notifications = NotificationLog::latest()->take(5)->get();
+        $pubSubMessages = Cache::get('pubsub_messages', []);
 
         return view('posts.index', [
             'posts' => $posts,
             'notifications' => $notifications,
+            'pubSubMessages' => $pubSubMessages,
         ]);
     }
 
@@ -40,5 +42,17 @@ class PostController extends Controller
         Cache::forget('posts');
 
         return redirect('/');
+    }
+
+    public function publish(Request $request)
+    {
+        $validated = $request->validate([
+            'channel' => ['required', 'string', 'max:100'],
+            'message' => ['required', 'string', 'max:255'],
+        ]);
+
+        \Illuminate\Support\Facades\Redis::publish($validated['channel'], $validated['message']);
+
+        return redirect('/')->with('status', 'Pub/Sub message published.');
     }
 }

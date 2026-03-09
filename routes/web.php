@@ -11,3 +11,4 @@ use App\Http\Controllers\PostController;
 Route::get('/',[PostController::class,'index']);
 
 Route::post('/posts',[PostController::class,'store']);
+Route::post('/pubsub/publish', [PostController::class, 'publish']);

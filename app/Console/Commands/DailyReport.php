@@ -34,3 +34,4 @@ class DailyReport extends Command
         $this->info('Report Generated');
     }
 }
+ 

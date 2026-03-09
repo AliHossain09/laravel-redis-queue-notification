@@ -48,3 +48,35 @@ if (bell && window.Echo) {
         updateCount(Number(badge.textContent || 0) + 1);
     });
 }
+
+const pubSubList = document.querySelector('[data-pubsub-list]');
+
+if (pubSubList && window.Echo) {
+    const pubSubEmpty = document.querySelector('[data-pubsub-empty]');
+
+    const createPubSubItem = (payload) => {
+        const item = document.createElement('li');
+        item.className = 'rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3';
+        item.innerHTML = `
+            <div class="flex items-center justify-between gap-3">
+                <p class="text-sm font-semibold text-amber-950">${payload.channel}</p>
+                <p class="text-xs text-amber-700">${payload.received_at ?? 'Just now'}</p>
+            </div>
+            <p class="mt-2 text-sm text-amber-900">${payload.message}</p>
+        `;
+
+        return item;
+    };
+
+    window.Echo.channel('pubsub').listen('.redis.message.received', (payload) => {
+        if (pubSubEmpty) {
+            pubSubEmpty.remove();
+        }
+
+        pubSubList.prepend(createPubSubItem(payload));
+
+        while (pubSubList.children.length > 8) {
+            pubSubList.removeChild(pubSubList.lastElementChild);
+        }
+    });
+}

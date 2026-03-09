@@ -8,6 +8,12 @@
 
 <div class="mx-auto max-w-5xl px-4 py-10">
 
+@if (session('status'))
+<div class="mb-6 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+{{ session('status') }}
+</div>
+@endif
+
 <div class="mb-8 flex items-center justify-between gap-4">
 <div>
 <p class="text-sm font-semibold uppercase tracking-[0.35em] text-slate-500">Redis Demo</p>
@@ -57,6 +63,7 @@ No notifications yet.
 </div>
 
 <div class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+<div class="space-y-8">
 <form method="POST" action="/posts" class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
 
 @csrf
@@ -94,6 +101,64 @@ Create Post
 
 </form>
 
+<form method="POST" action="/pubsub/publish" class="rounded-3xl border border-amber-200 bg-white p-6 shadow-sm">
+@csrf
+
+<div class="mb-5">
+<p class="text-sm font-semibold uppercase tracking-[0.3em] text-amber-700">Redis Pub/Sub</p>
+<h2 class="mt-2 text-xl font-bold text-slate-900">Publish a Message</h2>
+<p class="mt-1 text-sm text-slate-500">Subscriber command চালু থাকলে message instantly process হবে।</p>
+</div>
+
+<div class="mb-4">
+<label class="mb-2 block font-semibold">Channel</label>
+<input
+type="text"
+name="channel"
+value="demo-channel"
+class="w-full rounded-xl border border-slate-200 px-3 py-2"
+required>
+</div>
+
+<div class="mb-4">
+<label class="mb-2 block font-semibold">Message</label>
+<textarea
+name="message"
+rows="3"
+class="w-full rounded-xl border border-slate-200 px-3 py-2"
+required></textarea>
+</div>
+
+<button class="rounded-xl bg-amber-500 px-4 py-2 font-semibold text-white">
+Publish Message
+</button>
+</form>
+</div>
+
+<div class="space-y-8">
+<div class="rounded-3xl border border-amber-200 bg-white p-6 shadow-sm">
+<div class="mb-4">
+<p class="text-sm font-semibold uppercase tracking-[0.3em] text-amber-700">Subscriber Feed</p>
+<h2 class="mt-2 text-xl font-bold text-slate-900">Recent Pub/Sub Messages</h2>
+</div>
+
+<ul data-pubsub-list class="space-y-3">
+@forelse($pubSubMessages as $message)
+<li class="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3">
+<div class="flex items-center justify-between gap-3">
+<p class="text-sm font-semibold text-amber-950">{{ $message['channel'] }}</p>
+<p class="text-xs text-amber-700">{{ $message['received_at'] }}</p>
+</div>
+<p class="mt-2 text-sm text-amber-900">{{ $message['message'] }}</p>
+</li>
+@empty
+<li data-pubsub-empty class="rounded-2xl border border-dashed border-amber-200 px-4 py-6 text-center text-sm text-amber-700">
+No pub/sub messages yet.
+</li>
+@endforelse
+</ul>
+</div>
+
 <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
 
 <h2 class="text-xl font-bold mb-4">
@@ -122,6 +187,7 @@ Posts List
 
 @endforeach
 
+</div>
 </div>
 </div>
 
