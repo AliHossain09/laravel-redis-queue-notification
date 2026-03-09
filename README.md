@@ -1,59 +1,274 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# <p align="center">Laravel Redis Queue Notification</p>
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A practical Laravel 12 project that demonstrates how Redis can be used across queue processing, real-time notifications, publish/subscribe messaging, caching, sessions, and scheduling inside a single dashboard-driven application.
 
-## About Laravel
+This repository is built as a hands-on backend systems demo. Instead of showing only CRUD, it combines asynchronous jobs, websocket broadcasting, Redis Pub/Sub, and scheduler integration in a way that is easy to review from both the code and the UI.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## GitHub Repo Description
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Use this short description for the repository:
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+`Laravel 12 demo using Redis Queue, Pub/Sub, Cache, Session, Scheduler, Reverb, and Echo for real-time notifications.`
 
-## Learning Laravel
+## Overview
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+The application allows a user to:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- create, edit, and delete posts
+- dispatch a Redis queue job after creating a post
+- generate real-time notifications through Laravel Reverb and Echo
+- publish messages to a Redis Pub/Sub channel
+- subscribe to Redis messages through a custom Artisan command
+- view recent Pub/Sub messages from the dashboard
+- edit and delete cached Pub/Sub message entries
+- run a scheduled daily report command
 
-## Laravel Sponsors
+## What This Project Demonstrates
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- Laravel queue jobs with Redis
+- Redis-backed cache and session drivers
+- event broadcasting with Laravel Reverb
+- frontend live updates with Laravel Echo
+- custom Redis Pub/Sub subscriber command
+- task scheduling with Laravel Scheduler
+- Blade-based dashboard with interactive management features
+- graceful fallback when websocket broadcasting is unavailable
 
-### Premium Partners
+## Tech Stack
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+- Laravel 12
+- PHP 8.2
+- MySQL
+- Redis
+- Predis
+- Laravel Reverb
+- Laravel Echo
+- Blade
+- Tailwind CSS
+- Vite
+- Vanilla JavaScript
 
-## Contributing
+## Implemented Features
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 1. Post Management
 
-## Code of Conduct
+- create posts from the dashboard
+- update existing posts inline
+- delete posts with confirmation
+- automatically clear cached post data when posts change
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 2. Queue-Based Notification Processing
 
-## Security Vulnerabilities
+- creating a post dispatches `SendPostNotification`
+- notification creation runs through Redis queue workers
+- notification history appears in the dashboard bell
+- notification count updates through real-time events and polling fallback
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### 3. Real-Time Notification Bell
+
+- recent notification list is shown in a bell dropdown
+- notification count is synced with the latest valid posts
+- Laravel Echo listens for broadcast events from Reverb
+- polling fallback keeps the UI updated if websocket delivery is delayed
+
+### 4. Redis Pub/Sub Demo
+
+- messages can be published from the dashboard
+- a custom subscriber command listens to a Redis channel
+- received Pub/Sub messages are stored in cache for dashboard display
+- cached Pub/Sub messages can be edited or deleted from the UI
+
+### 5. Scheduler Demo
+
+- a custom command is scheduled in `routes/console.php`
+- the command demonstrates periodic reporting through Laravel Scheduler
+
+## Project Flow
+
+### Post Notification Flow
+
+1. A post is created from the dashboard.
+2. Laravel stores it in MySQL.
+3. A Redis queue job is dispatched.
+4. The job creates a notification log entry.
+5. A broadcast event is sent through Reverb.
+6. The frontend updates the notification bell.
+
+### Redis Pub/Sub Flow
+
+1. A message is published from the dashboard form.
+2. Redis receives the published message on a channel.
+3. The subscriber command listens to that channel.
+4. The message is cached for dashboard rendering.
+5. A real-time event broadcasts the received payload to the browser.
+
+## Important Files
+
+### Backend
+
+- [`app/Http/Controllers/PostController.php`](app/Http/Controllers/PostController.php)
+- [`app/Jobs/SendPostNotification.php`](app/Jobs/SendPostNotification.php)
+- [`app/Console/Commands/ListenRedisChannel.php`](app/Console/Commands/ListenRedisChannel.php)
+- [`app/Console/Commands/DailyReport.php`](app/Console/Commands/DailyReport.php)
+- [`app/Events/NotificationSent.php`](app/Events/NotificationSent.php)
+- [`app/Events/RedisMessageReceived.php`](app/Events/RedisMessageReceived.php)
+
+### Frontend
+
+- [`resources/views/posts/index.blade.php`](resources/views/posts/index.blade.php)
+- [`resources/js/bootstrap.js`](resources/js/bootstrap.js)
+- [`resources/js/app.js`](resources/js/app.js)
+
+### Configuration
+
+- [`config/queue.php`](config/queue.php)
+- [`config/database.php`](config/database.php)
+- [`config/broadcasting.php`](config/broadcasting.php)
+- [`config/reverb.php`](config/reverb.php)
+- [`routes/web.php`](routes/web.php)
+- [`routes/console.php`](routes/console.php)
+
+## Setup Instructions
+
+### 1. Clone the project
+
+```bash
+git clone https://github.com/AliHossain09/laravel-redis-queue-notification.git
+cd laravel-redis-queue-notification
+```
+
+### 2. Install dependencies
+
+```bash
+composer install
+npm install
+```
+
+### 3. Configure environment
+
+```bash
+cp .env.example .env
+php artisan key:generate
+```
+
+Update your `.env` file with your own:
+
+- MySQL database credentials
+- Redis host and port
+- local app URL if needed
+
+### 4. Run migrations
+
+```bash
+php artisan migrate
+```
+
+### 5. Build frontend assets
+
+```bash
+npm run build
+```
+
+For development:
+
+```bash
+npm run dev
+```
+
+## How to Run the Full Project
+
+Open separate terminals and run:
+
+### Laravel server
+
+```bash
+php artisan serve
+```
+
+### Queue worker
+
+```bash
+php artisan queue:work
+```
+
+### Reverb websocket server
+
+```bash
+php artisan reverb:start
+```
+
+### Redis Pub/Sub subscriber
+
+```bash
+php artisan app:redis-subscribe demo-channel
+```
+
+### Scheduler
+
+```bash
+php artisan schedule:run
+```
+
+Or continuously for local testing:
+
+```bash
+php artisan schedule:work
+```
+
+## Demo Commands
+
+```bash
+php artisan app:daily-report
+php artisan app:redis-subscribe demo-channel
+php artisan queue:work
+php artisan reverb:start
+php artisan schedule:list
+```
+
+## Screenshots
+
+### Current Dashboard
+
+The dashboard currently includes:
+
+- notification bell with live count
+- post create/edit/delete section
+- Redis Pub/Sub publish form
+- subscriber feed with edit/delete actions
+
+## Notes and Limitations
+
+- Redis must be running before queue, session, cache, and Pub/Sub features will work.
+- Reverb must be running for live websocket notifications.
+- If Redis returns an RDB `MISCONF` error, Redis server persistence needs to be fixed or restarted before queue writes will succeed.
+- Laravel Horizon is not included in this Windows/XAMPP environment because Horizon requires `pcntl` and `posix`, which are not available in a standard Windows PHP setup.
+
+## Why This Project Is Valuable for Recruiters
+
+This project shows practical understanding of:
+
+- asynchronous processing
+- Redis integration beyond simple caching
+- real-time event delivery
+- scheduler-based background automation
+- backend and frontend coordination in Laravel
+- building developer-friendly demos around actual infrastructure concepts
+
+## Suggested GitHub Topics
+
+You can add these topics on GitHub:
+
+- `laravel`
+- `php`
+- `redis`
+- `queue`
+- `pubsub`
+- `reverb`
+- `laravel-echo`
+- `blade`
+- `mysql`
+- `vite`
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is open-sourced under the [MIT license](https://opensource.org/licenses/MIT).
