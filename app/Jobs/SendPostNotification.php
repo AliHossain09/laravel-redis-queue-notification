@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Events\NotificationSent;
 use App\Models\NotificationLog;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
@@ -19,10 +20,12 @@ class SendPostNotification implements ShouldQueue
 
     public function handle()
     {
-        NotificationLog::create([
+        $notification = NotificationLog::create([
             'user_id' => $this->post->user_id,
             'message' => 'New post created: '.$this->post->title,
             'is_sent' => true,
         ]);
+
+        event(new NotificationSent($notification));
     }
 }

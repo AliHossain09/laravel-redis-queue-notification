@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\PostCreated;
 use App\Jobs\SendPostNotification;
+use App\Models\NotificationLog;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -16,7 +17,12 @@ class PostController extends Controller
             return Post::latest()->get();
         });
 
-        return view('posts.index', compact('posts'));
+        $notifications = NotificationLog::latest()->take(5)->get();
+
+        return view('posts.index', [
+            'posts' => $posts,
+            'notifications' => $notifications,
+        ]);
     }
 
     public function store(Request $request)
