@@ -1,40 +1,63 @@
-# <p align="center">Laravel Redis Queue Notification</p>
+# Laravel Redis Queue Notification
 
-A practical Laravel 12 project that demonstrates how Redis can be used across queue processing, real-time notifications, publish/subscribe messaging, caching, sessions, and scheduling inside a single dashboard-driven application.
+A practical **Laravel 12 demo project** showing how Redis can power multiple backend systems including **queue processing, real-time notifications, Pub/Sub messaging, caching, sessions, and task scheduling** — all inside a single dashboard application.
 
-This repository is built as a hands-on backend systems demo. Instead of showing only CRUD, it combines asynchronous jobs, websocket broadcasting, Redis Pub/Sub, and scheduler integration in a way that is easy to review from both the code and the UI.
+## Dashboard Preview
+ ![Dashboard](https://github.com/AliHossain09/laravel-redis-queue-notification/blob/main/laravel-redis-queue-notification.png?raw=true)
 
-![image alt](https://github.com/AliHossain09/laravel-redis-queue-notification/blob/main/laravel-redis-queue-notification.png?raw=true)
+This project focuses on **real backend infrastructure concepts**, combining asynchronous jobs, websocket broadcasting, Redis Pub/Sub, and Laravel Scheduler in a way that is easy to review from both the **codebase and UI**.
 
-## GitHub Repo Description
+---
 
-Use this short description for the repository:
+## Repository Description
 
-`Laravel 12 demo using Redis Queue, Pub/Sub, Cache, Session, Scheduler, Reverb, and Echo for real-time notifications.`
+Laravel 12 demo using Redis Queue, Pub/Sub, Cache, Session, Scheduler, Reverb, and Echo for real-time notifications.
 
-## Overview
+---
 
-The application allows a user to:
+## Project Overview
 
-- create, edit, and delete posts
-- dispatch a Redis queue job after creating a post
-- generate real-time notifications through Laravel Reverb and Echo
-- publish messages to a Redis Pub/Sub channel
-- subscribe to Redis messages through a custom Artisan command
-- view recent Pub/Sub messages from the dashboard
-- edit and delete cached Pub/Sub message entries
-- run a scheduled daily report command
+The application demonstrates how Redis can integrate with Laravel to power several backend features:
 
-## What This Project Demonstrates
+- Post creation, editing, and deletion
+- Queue-based notification processing
+- Real-time notification updates
+- Redis Pub/Sub messaging
+- Cached message storage
+- Scheduler-based background tasks
+- Interactive dashboard for monitoring events
 
-- Laravel queue jobs with Redis
-- Redis-backed cache and session drivers
-- event broadcasting with Laravel Reverb
-- frontend live updates with Laravel Echo
-- custom Redis Pub/Sub subscriber command
-- task scheduling with Laravel Scheduler
-- Blade-based dashboard with interactive management features
-- graceful fallback when websocket broadcasting is unavailable
+---
+
+## Key Features
+
+### Post Management
+- Create, update, and delete posts
+- Automatic cache clearing when posts change
+- Inline dashboard editing
+
+### Queue-Based Notifications
+- Post creation dispatches a Redis queue job
+- Notifications processed asynchronously
+- Notification history available in dashboard
+
+### Real-Time Notification System
+- Notification bell with live updates
+- Laravel Reverb websocket broadcasting
+- Laravel Echo frontend listener
+- Polling fallback when websocket is unavailable
+
+### Redis Pub/Sub Messaging
+- Publish messages from dashboard
+- Custom Artisan subscriber command
+- Messages cached and displayed in UI
+- Edit and delete cached messages
+
+### Task Scheduling
+- Custom Artisan command scheduled through Laravel Scheduler
+- Demonstrates automated background reporting
+
+---
 
 ## Tech Stack
 
@@ -50,122 +73,98 @@ The application allows a user to:
 - Vite
 - Vanilla JavaScript
 
-## Implemented Features
+---
 
-### 1. Post Management
+## System Flow
 
-- create posts from the dashboard
-- update existing posts inline
-- delete posts with confirmation
-- automatically clear cached post data when posts change
+### Notification Flow
 
-### 2. Queue-Based Notification Processing
-
-- creating a post dispatches `SendPostNotification`
-- notification creation runs through Redis queue workers
-- notification history appears in the dashboard bell
-- notification count updates through real-time events and polling fallback
-
-### 3. Real-Time Notification Bell
-
-- recent notification list is shown in a bell dropdown
-- notification count is synced with the latest valid posts
-- Laravel Echo listens for broadcast events from Reverb
-- polling fallback keeps the UI updated if websocket delivery is delayed
-
-### 4. Redis Pub/Sub Demo
-
-- messages can be published from the dashboard
-- a custom subscriber command listens to a Redis channel
-- received Pub/Sub messages are stored in cache for dashboard display
-- cached Pub/Sub messages can be edited or deleted from the UI
-
-### 5. Scheduler Demo
-
-- a custom command is scheduled in `routes/console.php`
-- the command demonstrates periodic reporting through Laravel Scheduler
-
-## Project Flow
-
-### Post Notification Flow
-
-1. A post is created from the dashboard.
-2. Laravel stores it in MySQL.
-3. A Redis queue job is dispatched.
-4. The job creates a notification log entry.
-5. A broadcast event is sent through Reverb.
-6. The frontend updates the notification bell.
+1. User creates a post
+2. Post stored in MySQL
+3. Redis queue job is dispatched
+4. Notification record created
+5. Broadcast event sent via Reverb
+6. Frontend notification bell updates
 
 ### Redis Pub/Sub Flow
 
-1. A message is published from the dashboard form.
-2. Redis receives the published message on a channel.
-3. The subscriber command listens to that channel.
-4. The message is cached for dashboard rendering.
-5. A real-time event broadcasts the received payload to the browser.
+1. Message published from dashboard
+2. Redis receives message on a channel
+3. Subscriber command listens to channel
+4. Message stored in cache
+5. Event broadcast updates frontend
+
+---
 
 ## Important Files
 
 ### Backend
 
-- [`app/Http/Controllers/PostController.php`](app/Http/Controllers/PostController.php)
-- [`app/Jobs/SendPostNotification.php`](app/Jobs/SendPostNotification.php)
-- [`app/Console/Commands/ListenRedisChannel.php`](app/Console/Commands/ListenRedisChannel.php)
-- [`app/Console/Commands/DailyReport.php`](app/Console/Commands/DailyReport.php)
-- [`app/Events/NotificationSent.php`](app/Events/NotificationSent.php)
-- [`app/Events/RedisMessageReceived.php`](app/Events/RedisMessageReceived.php)
+```
+app/Http/Controllers/PostController.php
+app/Jobs/SendPostNotification.php
+app/Console/Commands/ListenRedisChannel.php
+app/Console/Commands/DailyReport.php
+app/Events/NotificationSent.php
+app/Events/RedisMessageReceived.php
+```
 
 ### Frontend
 
-- [`resources/views/posts/index.blade.php`](resources/views/posts/index.blade.php)
-- [`resources/js/bootstrap.js`](resources/js/bootstrap.js)
-- [`resources/js/app.js`](resources/js/app.js)
+```
+resources/views/posts/index.blade.php
+resources/js/bootstrap.js
+resources/js/app.js
+```
 
 ### Configuration
 
-- [`config/queue.php`](config/queue.php)
-- [`config/database.php`](config/database.php)
-- [`config/broadcasting.php`](config/broadcasting.php)
-- [`config/reverb.php`](config/reverb.php)
-- [`routes/web.php`](routes/web.php)
-- [`routes/console.php`](routes/console.php)
+```
+config/queue.php
+config/database.php
+config/broadcasting.php
+config/reverb.php
+routes/web.php
+routes/console.php
+```
 
-## Setup Instructions
+---
 
-### 1. Clone the project
+## Installation
+
+### Clone the repository
 
 ```bash
 git clone https://github.com/AliHossain09/laravel-redis-queue-notification.git
 cd laravel-redis-queue-notification
 ```
 
-### 2. Install dependencies
+### Install dependencies
 
 ```bash
 composer install
 npm install
 ```
 
-### 3. Configure environment
+### Configure environment
 
 ```bash
 cp .env.example .env
 php artisan key:generate
 ```
 
-Update your `.env` file with your own:
+Update `.env` with:
 
-- MySQL database credentials
+- MySQL credentials
 - Redis host and port
-- local app URL if needed
 
-### 4. Run migrations
+### Run migrations
 
 ```bash
 php artisan migrate
 ```
 
-### 5. Build frontend assets
+### Build frontend assets
 
 ```bash
 npm run build
@@ -177,49 +176,47 @@ For development:
 npm run dev
 ```
 
-## How to Run the Full Project
+---
 
-Open separate terminals and run:
+## Running the Project
 
-### Laravel server
+Run these commands in separate terminals.
+
+### Start Laravel server
 
 ```bash
 php artisan serve
 ```
 
-### Queue worker
+### Start queue worker
 
 ```bash
 php artisan queue:work
 ```
 
-### Reverb websocket server
+### Start Reverb websocket server
 
 ```bash
 php artisan reverb:start
 ```
 
-### Redis Pub/Sub subscriber
+### Start Redis subscriber
 
 ```bash
 php artisan app:redis-subscribe demo-channel
 ```
 
-### Scheduler
-
-```bash
-php artisan schedule:run
-```
-
-Or continuously for local testing:
+### Run scheduler
 
 ```bash
 php artisan schedule:work
 ```
 
+---
+
 ## Demo Commands
 
-```bash
+```
 php artisan app:daily-report
 php artisan app:redis-subscribe demo-channel
 php artisan queue:work
@@ -227,50 +224,47 @@ php artisan reverb:start
 php artisan schedule:list
 ```
 
-## Screenshots
+---
 
-### Current Dashboard
+## Notes
 
-The dashboard currently includes:
+- Redis must be running for queue, cache, session, and Pub/Sub features.
+- Reverb must run for real-time websocket notifications.
+- Redis `MISCONF` errors occur when persistence fails — restarting Redis usually resolves it.
+- Laravel Horizon is not included because it requires `pcntl` and `posix`, which are not available in standard Windows PHP environments.
 
-- notification bell with live count
-- post create/edit/delete section
-- Redis Pub/Sub publish form
-- subscriber feed with edit/delete actions
+---
 
-## Notes and Limitations
+## Why This Project Matters
 
-- Redis must be running before queue, session, cache, and Pub/Sub features will work.
-- Reverb must be running for live websocket notifications.
-- If Redis returns an RDB `MISCONF` error, Redis server persistence needs to be fixed or restarted before queue writes will succeed.
-- Laravel Horizon is not included in this Windows/XAMPP environment because Horizon requires `pcntl` and `posix`, which are not available in a standard Windows PHP setup.
+This project demonstrates practical experience with:
 
-## Why This Project Is Valuable for Recruiters
+- Asynchronous job processing
+- Redis integration beyond caching
+- Real-time event broadcasting
+- Background task automation
+- Backend and frontend coordination in Laravel
+- Building infrastructure-focused developer demos
 
-This project shows practical understanding of:
-
-- asynchronous processing
-- Redis integration beyond simple caching
-- real-time event delivery
-- scheduler-based background automation
-- backend and frontend coordination in Laravel
-- building developer-friendly demos around actual infrastructure concepts
+---
 
 ## Suggested GitHub Topics
 
-You can add these topics on GitHub:
+```
+laravel
+php
+redis
+queue
+pubsub
+reverb
+laravel-echo
+blade
+mysql
+vite
+```
 
-- `laravel`
-- `php`
-- `redis`
-- `queue`
-- `pubsub`
-- `reverb`
-- `laravel-echo`
-- `blade`
-- `mysql`
-- `vite`
+---
 
 ## License
 
-This project is open-sourced under the [MIT license](https://opensource.org/licenses/MIT).
+This project is open-sourced under the **MIT License**.
