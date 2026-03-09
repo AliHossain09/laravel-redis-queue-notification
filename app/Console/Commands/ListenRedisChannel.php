@@ -21,7 +21,7 @@ class ListenRedisChannel extends Command
 
         $this->info("Listening to Redis channel [{$channel}]...");
 
-        Redis::subscribe([$channel], function (string $message, string $incomingChannel) {
+        Redis::connection('pubsub')->subscribe([$channel], function (string $message, string $incomingChannel) {
             $payload = [
                 'id' => (string) Str::uuid(),
                 'channel' => $incomingChannel,
@@ -36,7 +36,15 @@ class ListenRedisChannel extends Command
             Cache::forever('pubsub_messages', $messages);
 
             Log::info('Redis pub/sub message received', $payload);
-            event(new RedisMessageReceived($payload));
+
+            try {
+                event(new RedisMessageReceived($payload));
+            } catch (\Throwable $exception) {
+                Log::warning('Pub/Sub broadcast skipped because the broadcaster is unavailable.', [
+                    'channel' => $incomingChannel,
+                    'error' => $exception->getMessage(),
+                ]);
+            }
 
             $this->line("[{$incomingChannel}] {$message}");
         });

@@ -73,7 +73,7 @@ const createPubSubItem = (payload) => {
         <form method="POST" action="/pubsub/messages/${payload.id}" class="mt-3">
             <input type="hidden" name="_token" value="${csrfToken ?? ''}">
             <input type="hidden" name="_method" value="DELETE">
-            <button class="rounded-lg border border-rose-200 px-3 py-2 text-xs font-semibold text-rose-600">Delete</button>
+            <button onclick="return confirm('Delete this pub/sub message?')" class="rounded-lg border border-rose-200 px-3 py-2 text-xs font-semibold text-rose-600">Delete</button>
         </form>
     `;
 

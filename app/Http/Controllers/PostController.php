@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\PostCreated;
 use App\Jobs\SendPostNotification;
 use App\Models\NotificationLog;
 use App\Models\Post;
@@ -11,11 +10,14 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Log;
 
 class PostController extends Controller
 {
     public function index()
     {
+        $this->pruneOrphanedNotifications();
+
         $posts = Cache::remember('posts', 60, function () {
             return Post::latest()->get();
         });
@@ -39,8 +41,6 @@ class PostController extends Controller
             'title' => $request->title,
             'content' => $request->content,
         ]);
-
-        event(new PostCreated($post));
 
         SendPostNotification::dispatch($post);
 
@@ -82,13 +82,15 @@ class PostController extends Controller
 
         $this->storePubSubMessages($messages);
 
-        return redirect('/')->with('status', 'Pub/Sub message published. Subscriber চললে এটি received event হিসেবেও ধরা পড়বে।');
+        return redirect('/')->with('status', 'Pub/Sub message published. If the subscriber is running, it will also be recorded as a received event.');
     }
 
     public function dashboardData(): JsonResponse
     {
+        $this->pruneOrphanedNotifications();
+
         $notifications = NotificationLog::latest()->take(5)->get(['id', 'message', 'created_at']);
-        $pubSubMessages = Cache::get('pubsub_messages', []);
+        $pubSubMessages = $this->getPubSubMessages();
 
         return response()->json([
             'notificationCount' => NotificationLog::count(),
@@ -108,14 +110,19 @@ class PostController extends Controller
             'content' => ['required', 'string'],
         ]);
 
+        $previousTitle = $post->title;
         $post->update($validated);
         Cache::forget('posts');
+
+        NotificationLog::where('message', 'New post created: '.$previousTitle)
+            ->update(['message' => 'New post created: '.$post->title]);
 
         return redirect('/')->with('status', 'Post updated.');
     }
 
     public function destroy(Post $post)
     {
+        NotificationLog::where('message', 'New post created: '.$post->title)->delete();
         $post->delete();
         Cache::forget('posts');
 
@@ -183,5 +190,23 @@ class PostController extends Controller
     private function storePubSubMessages(array $messages): void
     {
         Cache::forever('pubsub_messages', array_values($messages));
+    }
+
+    private function pruneOrphanedNotifications(): void
+    {
+        $validMessages = Post::query()
+            ->pluck('title')
+            ->map(fn (string $title) => 'New post created: '.$title)
+            ->all();
+
+        if (empty($validMessages)) {
+            NotificationLog::query()->delete();
+
+            return;
+        }
+
+        NotificationLog::query()
+            ->whereNotIn('message', $validMessages)
+            ->delete();
     }
 }

@@ -7,7 +7,7 @@
 </head>
 <body class="min-h-screen bg-slate-100 text-slate-900">
 
-<div class="mx-auto max-w-5xl px-4 py-10">
+<div class="mx-auto  px-4 py-10">
 
 @if (session('status'))
 <div class="mb-6 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
@@ -16,9 +16,9 @@
 @endif
 
 <div class="mb-8 flex items-center justify-between gap-4">
-<div>
-<p class="text-sm font-semibold uppercase tracking-[0.35em] text-slate-500">Redis Demo</p>
-<h1 class="mt-2 text-3xl font-bold">
+<div class="w-full bg-white p-6 rounded-3xl border border-slate-200 shadow-xl">
+<p class="text-sm font-semibold uppercase tracking-[0.35em] text-slate-500 text-center">Redis Demo</p>
+<h1 class="mt-2 text-3xl font-bold text-center">
 Laravel Redis Queue Notification
 </h1>
 </div>
@@ -44,7 +44,7 @@ data-notification-panel
 class="hidden absolute right-0 z-10 mt-3 w-80 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-xl">
 <div class="border-b border-slate-100 px-5 py-4">
 <h2 class="text-sm font-semibold text-slate-800">Live Notifications</h2>
-<p class="mt-1 text-xs text-slate-500">Queue worker notification complete করলে এখানে চলে আসবে।</p>
+<p class="mt-1 text-xs text-slate-500">The notification will appear here after the queue worker finishes processing</p>
 </div>
 
 <ul data-notification-list class="space-y-3 p-4">
@@ -63,7 +63,7 @@ No notifications yet.
 </div>
 </div>
 
-<div class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+<div class="grid items-start gap-8 lg:grid-cols-[1.1fr_0.9fr]">
 <div class="space-y-8">
 <form method="POST" action="/posts" class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
 
@@ -108,7 +108,7 @@ Create Post
 <div class="mb-5">
 <p class="text-sm font-semibold uppercase tracking-[0.3em] text-amber-700">Redis Pub/Sub</p>
 <h2 class="mt-2 text-xl font-bold text-slate-900">Publish a Message</h2>
-<p class="mt-1 text-sm text-slate-500">Subscriber command চালু থাকলে message instantly process হবে।</p>
+<p class="mt-1 text-sm text-slate-500">If the subscriber command is enabled, messages will be processed instantly</p>
 </div>
 
 <div class="mb-4">
@@ -136,8 +136,8 @@ Publish Message
 </form>
 </div>
 
-<div class="space-y-8">
-<div class="rounded-3xl border border-amber-200 bg-white p-6 shadow-sm">
+<div class="grid auto-rows-min items-start gap-6 xl:grid-cols-2">
+<div class="self-start rounded-3xl border border-amber-200 bg-white p-6 shadow-sm">
 <div class="mb-4">
 <p class="text-sm font-semibold uppercase tracking-[0.3em] text-amber-700">Subscriber Feed</p>
 <h2 class="mt-2 text-xl font-bold text-slate-900">Recent Pub/Sub Messages</h2>
@@ -171,7 +171,7 @@ required>{{ $message['message'] }}</textarea>
 <button class="rounded-lg bg-amber-500 px-3 py-2 text-xs font-semibold text-white">Save</button>
 </form>
 </details>
-<form method="POST" action="/pubsub/messages/{{ $message['id'] }}" class="mt-3">
+<form method="POST" action="/pubsub/messages/{{ $message['id'] }}" class="mt-3" onsubmit="return confirm('Delete this pub/sub message?')">
 @csrf
 @method('DELETE')
 <button class="rounded-lg border border-rose-200 px-3 py-2 text-xs font-semibold text-rose-600">Delete</button>
@@ -185,7 +185,7 @@ No pub/sub messages yet.
 </ul>
 </div>
 
-<div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+<div class="self-start rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
 
 <h2 class="text-xl font-bold mb-4">
 
@@ -229,7 +229,7 @@ required>{{ $post->content }}</textarea>
 </form>
 </details>
 
-<form method="POST" action="/posts/{{ $post->id }}" class="mt-3">
+<form method="POST" action="/posts/{{ $post->id }}" class="mt-3" onsubmit="return confirm('Delete this post?')">
 @csrf
 @method('DELETE')
 <button class="rounded-lg border border-rose-200 px-3 py-2 text-xs font-semibold text-rose-600">Delete</button>

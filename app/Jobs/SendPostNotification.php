@@ -6,6 +6,7 @@ use App\Events\NotificationSent;
 use App\Models\NotificationLog;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Facades\Log;
 
 class SendPostNotification implements ShouldQueue
 {
@@ -26,6 +27,13 @@ class SendPostNotification implements ShouldQueue
             'is_sent' => true,
         ]);
 
-        event(new NotificationSent($notification));
+        try {
+            event(new NotificationSent($notification));
+        } catch (\Throwable $exception) {
+            Log::warning('Notification broadcast skipped because the broadcaster is unavailable.', [
+                'notification_id' => $notification->id,
+                'error' => $exception->getMessage(),
+            ]);
+        }
     }
 }
