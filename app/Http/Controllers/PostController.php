@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\PostCreated;
 use App\Jobs\SendPostNotification;
 use App\Models\Post;
 use Illuminate\Http\Request;
@@ -25,6 +26,8 @@ class PostController extends Controller
             'title' => $request->title,
             'content' => $request->content,
         ]);
+
+        event(new PostCreated($post));
 
         SendPostNotification::dispatch($post);
 

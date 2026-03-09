@@ -10,4 +10,4 @@ Artisan::command('inspire', function () {
 
 
 
-Schedule::command('report:daily')->daily();
+Schedule::command('app:daily-report')->daily();
