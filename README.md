@@ -4,6 +4,8 @@ A practical Laravel 12 project that demonstrates how Redis can be used across qu
 
 This repository is built as a hands-on backend systems demo. Instead of showing only CRUD, it combines asynchronous jobs, websocket broadcasting, Redis Pub/Sub, and scheduler integration in a way that is easy to review from both the code and the UI.
 
+![image alt](https://github.com/AliHossain09/laravel-redis-queue-notification/blob/main/laravel-redis-queue-notification.png?raw=true)
+
 ## GitHub Repo Description
 
 Use this short description for the repository:
