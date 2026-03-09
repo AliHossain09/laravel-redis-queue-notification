@@ -7,6 +7,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Str;
 
 class ListenRedisChannel extends Command
 {
@@ -22,9 +23,11 @@ class ListenRedisChannel extends Command
 
         Redis::subscribe([$channel], function (string $message, string $incomingChannel) {
             $payload = [
+                'id' => (string) Str::uuid(),
                 'channel' => $incomingChannel,
                 'message' => $message,
                 'received_at' => now()->toDateTimeString(),
+                'source' => 'subscriber',
             ];
 
             $messages = Cache::get('pubsub_messages', []);
